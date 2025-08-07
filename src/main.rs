@@ -44,10 +44,15 @@ fn main() {
     }
 }
 
-fn broadcast_players(socket: &UdpSocket, players: &HashMap<String, Player>){   
-    for (_, v) in players{
-        let client_message = format!("Server Response to {}", v.id);
-        socket.send_to(client_message.as_bytes(), v.client_ip.clone()).unwrap();
+fn broadcast_players(socket: &UdpSocket, players: &HashMap<String, Player>){ 
+    //make sure not to broadcast to player info about itself and only broadcast players on the same map  
+    for (receiver_id, receiver_player) in players{
+        for (id, player) in players{
+            if receiver_id != id && receiver_player.current_map == player.current_map{
+                let client_message = format!("Server Response to {}", id);
+                let _ = socket.send_to(client_message.as_bytes(), receiver_player.client_ip.clone());
+            }           
+        }
     }  
 }
 
