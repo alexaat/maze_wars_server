@@ -12,7 +12,7 @@ fn main() {
     let mut buffer = [0; 1024];
 
     //players
-    let mut playes = HashMap::new();
+    let mut players = HashMap::new();
 
     loop {
         //read client request
@@ -24,9 +24,9 @@ fn main() {
             Ok(mut player) => {
                 player.client_ip = format!("{:?}",source);
                 if player.is_active {
-                    playes.insert(player.id.clone(), player);
+                    players.insert(player.id.clone(), player);
                 }else{
-                    playes.remove(player.id.as_str());
+                    players.remove(player.id.as_str());
                 }
             },
             Err(e) => {
@@ -35,12 +35,19 @@ fn main() {
         }
 
         //print request
-        println!("Recived {} from {}", request.trim(), source);
+        //println!("Recived {} from {}", request.trim(), source);
         //print list
-        println!("playes: {playes:?}");
+        //println!("players: {players:?}");
 
-        let response = format!("Server Response: {}", request.trim());
-        socket.send_to(response.as_bytes(), source).unwrap();
+
+        broadcast_players(&socket, &players);
     }
+}
+
+fn broadcast_players(socket: &UdpSocket, players: &HashMap<String, Player>){   
+    for (_, v) in players{
+        let client_message = format!("Server Response to {}", v.id);
+        socket.send_to(client_message.as_bytes(), v.client_ip.clone()).unwrap();
+    }  
 }
 
