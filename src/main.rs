@@ -25,8 +25,10 @@ fn main() {
                 player.client_ip = format!("{:?}",source);
                 if player.is_active {
                     players.insert(player.id.clone(), player);
-                }else{
-                    players.remove(player.id.as_str());
+                }else{ 
+                    players.insert(player.id.clone(), player.clone());
+                    broadcast_players(&socket, &players);
+                    players.remove(player.id.clone().as_str());
                 }
             },
             Err(e) => {
@@ -50,7 +52,7 @@ fn broadcast_players(socket: &UdpSocket, players: &HashMap<String, Player>){
         for (id, player) in players{
             if receiver_id != id && receiver_player.current_map == player.current_map{
                 if let Ok(message_to_client) = serde_json::to_string(player){
-                    let _ = socket.send_to(message_to_client.as_bytes(), receiver_player.client_ip.clone());
+                    let _ = socket.send_to(message_to_client.as_bytes(), receiver_player.client_ip.clone());                   
                 }               
             }           
         }
