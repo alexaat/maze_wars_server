@@ -49,8 +49,9 @@ fn broadcast_players(socket: &UdpSocket, players: &HashMap<String, Player>){
     for (receiver_id, receiver_player) in players{
         for (id, player) in players{
             if receiver_id != id && receiver_player.current_map == player.current_map{
-                let client_message = format!("Server Response to {}", id);
-                let _ = socket.send_to(client_message.as_bytes(), receiver_player.client_ip.clone());
+                if let Ok(message_to_client) = serde_json::to_string(player){
+                    let _ = socket.send_to(message_to_client.as_bytes(), receiver_player.client_ip.clone());
+                }               
             }           
         }
     }  

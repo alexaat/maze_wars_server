@@ -9,7 +9,7 @@ pub struct Player{
    pub is_active: bool,
    pub orientation: f32,
    pub current_map: String,
-   #[serde(skip_deserializing)]
+   #[serde(skip_deserializing, skip_serializing)]
    pub client_ip: String
 }
 impl Player{
