@@ -23,15 +23,7 @@ fn main() {
         match player_result {
             Ok(mut player) => {
                 player.client_ip = format!("{:?}",source);
-                // if player.is_active {
-                //     players.insert(player.id.clone(), player);
-                // }else{ 
-                //     players.insert(player.id.clone(), player.clone());
-                //     broadcast_players(&socket, &players);
-                //     players.remove(player.id.clone().as_str());
-                // }
                 players.insert(player.id.clone(), player);
-
             },
             Err(e) => {
                 println!("Error wile parsiing player: {:?}",e);
@@ -59,14 +51,19 @@ fn main() {
 }
 
 fn broadcast_players(socket: &UdpSocket, players: &HashMap<String, Player>){ 
-    //make sure not to broadcast to player info about itself and only broadcast players on the same map  
+    //make sure not to broadcast to player info about itself and only broadcast players on the same map 
+     
     for (receiver_id, receiver_player) in players{
+        let mut enemies = vec![];
         for (id, player) in players{
             if receiver_id != id && receiver_player.current_map == player.current_map{
-                if let Ok(message_to_client) = serde_json::to_string(player){
-                    let _ = socket.send_to(message_to_client.as_bytes(), receiver_player.client_ip.clone());                   
-                }               
-            }           
+                enemies.push(player);
+            }   
+            if let Ok(message_to_client) = serde_json::to_string(&enemies){
+                if let Err(e) = socket.send_to(message_to_client.as_bytes(), receiver_player.client_ip.clone()){
+                    println!("Error while broadcasting: {:?}", e);
+                }                   
+            }            
         }
     }  
 }
