@@ -23,13 +23,15 @@ fn main() {
         match player_result {
             Ok(mut player) => {
                 player.client_ip = format!("{:?}",source);
-                if player.is_active {
-                    players.insert(player.id.clone(), player);
-                }else{ 
-                    players.insert(player.id.clone(), player.clone());
-                    broadcast_players(&socket, &players);
-                    players.remove(player.id.clone().as_str());
-                }
+                // if player.is_active {
+                //     players.insert(player.id.clone(), player);
+                // }else{ 
+                //     players.insert(player.id.clone(), player.clone());
+                //     broadcast_players(&socket, &players);
+                //     players.remove(player.id.clone().as_str());
+                // }
+                players.insert(player.id.clone(), player);
+
             },
             Err(e) => {
                 println!("Error wile parsiing player: {:?}",e);
@@ -43,6 +45,16 @@ fn main() {
 
 
         broadcast_players(&socket, &players);
+
+        //implement garbage collector
+        /*
+            if !player.is_active{
+                if let None = player.time_since_inactive{
+                    player.time_since_inactive = Some(96);
+                }
+            }
+         */
+
     }
 }
 

@@ -10,7 +10,9 @@ pub struct Player{
    pub orientation: f32,
    pub current_map: String,
    #[serde(skip_deserializing, skip_serializing)]
-   pub client_ip: String
+   pub client_ip: String,
+   #[serde(skip_deserializing, skip_serializing)]
+   pub time_since_inactive: Option<u64>
 }
 impl Player{
    pub fn new() -> Self{
@@ -22,7 +24,8 @@ impl Player{
          is_active: true,
          orientation: 0.0,
          current_map: String::from(""),       
-         client_ip: String::from("")
+         client_ip: String::from(""),
+         time_since_inactive: None
       }
    }
 }
