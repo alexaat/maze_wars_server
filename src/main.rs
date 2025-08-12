@@ -7,7 +7,7 @@ use models::*;
 
 
 fn main() {
-    let socket = UdpSocket::bind("0.0.0.0:4001").unwrap();
+    let socket = UdpSocket::bind("0.0.0.0:4000").unwrap();
     println!("Server listening on {}", socket.local_addr().unwrap());
     let mut buffer = [0; 1024];
 
