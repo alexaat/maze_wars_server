@@ -1,18 +1,27 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum PlayerStatus {
+    Active,
+    Disconnent,
+    Killed,
+    Unknown,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Player {
     pub id: String,
     pub name: String,
     pub position: Position,
     pub score: u32,
-    pub is_active: bool,
+    //pub is_active: bool,
+    pub player_status: PlayerStatus,
     pub orientation: f32,
     pub current_map: String,
     #[serde(skip_deserializing, skip_serializing)]
     pub client_ip: String,
-    #[serde(skip_deserializing, skip_serializing)]
-    pub time_since_inactive: Option<u64>,
+    //  #[serde(skip_deserializing, skip_serializing)]
+    //  pub time_since_inactive: Option<u64>,
 }
 impl Player {
     pub fn new() -> Self {
@@ -21,11 +30,12 @@ impl Player {
             name: String::from(""),
             position: Position::new(),
             score: 0,
-            is_active: true,
+            //is_active: true,
+            player_status: PlayerStatus::Unknown,
             orientation: 0.0,
             current_map: String::from(""),
             client_ip: String::from(""),
-            time_since_inactive: None,
+            //time_since_inactive: None,
         }
     }
 }
