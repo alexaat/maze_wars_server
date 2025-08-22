@@ -17,13 +17,15 @@ fn main() {
         //read client request
         let (size, source) = socket.recv_from(&mut buffer).unwrap();
         let request = String::from_utf8_lossy(&buffer[..size]);
+        println!("request:");
+        println!("{request}");
         //parse request body
         //let player_result = from_str::<Player>(request.to_string().as_str());
         match from_str::<Player>(request.to_string().as_str()) {
             Ok(mut player) => match player.player_status {
                 PlayerStatus::Disconnent => {
                     players.remove(&player.id);
-                }
+                },
                 _ => {
                     player.client_ip = format!("{:?}", source);
                     players.insert(player.id.clone(), player);
@@ -55,7 +57,10 @@ fn main() {
 fn broadcast_players(socket: &UdpSocket, players: &HashMap<String, Player>) {
     let values: Vec<Player> = players.values().cloned().collect();
     if let Ok(message_to_client) = serde_json::to_string(&values) {
+
         for (_, player) in players {
+            println!("broadcast to: {}", player.name);
+            println!("{message_to_client}");
             if let Err(e) = socket.send_to(message_to_client.as_bytes(), player.client_ip.clone()) {
                 println!("Error while broadcasting: {:?}", e);
             }
